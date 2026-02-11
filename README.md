@@ -1,19 +1,18 @@
-# StageOps API
+# StageOps Backend
 
-Backend central de la plateforme StageOps.
+API centrale de la plateforme StageOps.
 
-Cette API gère la logique métier, la persistance des données et les permissions utilisateurs pour l’ensemble du système.
+Ce service constitue le cœur logique du système et gère l’ensemble des données, des règles métiers et des services d’intelligence technique.
 
 ## Responsabilités
 
-- Authentification utilisateurs
-- Gestion des rôles techniques
-- Gestion des projets
+- Gestion des utilisateurs et rôles techniques
+- Gestion des projets scéniques
 - Inventaire matériel
-- Suivi de l’état opérationnel
-- Déclaration d’incidents
-- Permissions par module
-- Exposition API REST
+- Suivi d’état opérationnel
+- Gestion des incidents
+- Synchronisation multi-clients
+- Calcul de l’usure résiduelle des lampes (RUL)
 
 ## Architecture
 
@@ -24,39 +23,47 @@ src/
     auth/
     users/
     projects/
-    roles/
+    equipment/
     lighting/
     sound/
-    equipment/
     incidents/
+    rul-engine/
   database/
-  config/
   middleware/
+  config/
+
+## Algorithme RUL (Remaining Useful Life)
+
+Le module RUL estime la durée de vie restante des sources lumineuses en fonction de :
+
+- heures d’utilisation
+- cycles d’allumage
+- température de fonctionnement
+- historique de maintenance
+
+Objectif : maintenance prédictive du matériel scénique.
 
 ## Stack technique
 
 - Node.js
-- Express / NestJS (selon implémentation)
-- PostgreSQL
+- API REST / GraphQL
+- PostgreSQL ou CouchDB
 - JWT Authentication
 - Validation middleware
 
 ## Installation
 
 ### Prérequis
-- Node.js >= 18
-- PostgreSQL
-- npm ou yarn
+Node.js >= 18  
+Base de données PostgreSQL ou CouchDB  
 
 ### Setup
 
 git clone <repo>
-cd StageOps-Api
+cd stageops-backend
 npm install
 
-Créer un fichier `.env`
-
-Variables requises :
+Créer `.env`
 
 DATABASE_URL=
 JWT_SECRET=
@@ -66,20 +73,11 @@ PORT=3000
 
 npm run dev
 
-API accessible sur :
-http://localhost:3000
-
-## Convention API
-
-- RESTful endpoints
-- JSON uniquement
-- Auth Bearer Token
-
 ## Sécurité
 
+- Authentification tokenisée
+- Permissions par rôle technique
 - Validation des entrées
-- Permissions par rôle
-- Séparation des modules
 
 ## Tests
 
@@ -87,10 +85,8 @@ npm run test
 
 ## Objectif MVP
 
-Fournir une API stable pour :
+Fournir une API stable pour la gestion des opérations techniques scéniques.
 
-- projets
-- matériel
-- incidents
-- rôles
+## Licence
 
+Projet académique.
