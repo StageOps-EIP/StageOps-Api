@@ -59,7 +59,16 @@ func main() {
 	authGroup.Get("/me", auth.JWTMiddleware(jwtSecret), handler.Me)
 
 	port := envOr("APP_PORT", "3000")
-	log.Fatal(app.Listen(":" + port))
+	tlsCert := os.Getenv("TLS_CERT")
+	tlsKey := os.Getenv("TLS_KEY")
+
+	if tlsCert != "" && tlsKey != "" {
+		log.Printf("TLS enabled — listening on :%s", port)
+		log.Fatal(app.ListenTLS(":"+port, tlsCert, tlsKey))
+	} else {
+		log.Printf("TLS not configured — listening on :%s (HTTP only)", port)
+		log.Fatal(app.Listen(":" + port))
+	}
 }
 
 // securityHeaders sets mandatory security response headers on every request.
