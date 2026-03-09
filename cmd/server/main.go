@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/limiter"
 	"github.com/stageops/backend/internal/audit"
 	"github.com/stageops/backend/internal/auth"
@@ -17,6 +18,11 @@ func main() {
 	})
 
 	app.Use(securityHeaders())
+	app.Use(cors.New(cors.Config{
+		AllowOrigins: envOr("CORS_ORIGINS", "http://localhost:5173"),
+		AllowHeaders: "Origin, Content-Type, Accept, Authorization",
+		AllowMethods: "GET, POST, PATCH, DELETE, OPTIONS",
+	}))
 
 	couchCfg := auth.CouchConfig{
 		BaseURL:  mustEnv("COUCHDB_URL"),
@@ -73,7 +79,7 @@ func main() {
 	usersGroup := api.Group("/users", auth.JWTMiddleware(jwtSecret))
 	usersGroup.Patch("/:id/role", auth.RequireRole(auth.RoleRG), handler.UpdateUserRole)
 
-	port := envOr("APP_PORT", "3000")
+	port := envOr("APP_PORT", "3001")
 	tlsCert := os.Getenv("TLS_CERT")
 	tlsKey := os.Getenv("TLS_KEY")
 
